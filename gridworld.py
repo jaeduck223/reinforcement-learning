@@ -39,10 +39,23 @@ class GridWorld:
         elif next_state == self.wall_state:
             next_state = state
 
-        return next_state
+        return next_state        #다음 상태 반환 
 
     def reward(self, state, action, next_state):
         return self.reward_map[next_state]
+
+    def reset(self):
+        self.agent_state = self.start_state
+        return self.agent_state
+
+    def step(self, action):
+        state = self.agent_state
+        next_state = self.next_state(state, action)
+        reward = self.reward(state, action, next_state)
+        done = (next_state == self.goal_state)
+
+        self.agent_state = next_state
+        return next_state, reward, done
 
     def render_v(self, v):
         for i in range(self.height):
@@ -58,6 +71,14 @@ class GridWorld:
                     row.append(f"{val:5.2f}")
             print("|".join(row))
         print()
+
+    def render_v2(self, v=None, policy=None, print_value=True):
+        renderer = render_helper.Renderer(self.reward_map, self.goal_state, self.wall_state)
+        renderer.render_v(v, policy, print_value)
+
+    def render_q(self, q=None, print_value=True):
+        renderer = render_helper.Renderer(self.reward_map, self.goal_state, self.wall_state)
+        renderer.render_q(q, print_value)
 
     @property
     def height(self):
